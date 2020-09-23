@@ -1,4 +1,4 @@
-const { Thought, User } = require('../models');
+const { User, Thought} = require('../models');
 
 const thoughtController = {
   // /api/thoughts
@@ -104,12 +104,12 @@ const thoughtController = {
       {new: true, runValidators: true})
     .populate({path: 'reactions', select: '-__v'})
     .select('-__v')
-    .then(dbThoughtsData => {
-        if (!dbThoughtsData) {
+    .then(dbThoughtData => {
+        if (!dbThoughtData) {
             res.status(404).json({message: 'No thoughts with this ID.'});
             return;
         }
-        res.json(dbThoughtsData);
+        res.json(dbThoughtData);
     })
     .catch(err => res.status(400).json(err))
 },
@@ -120,9 +120,16 @@ const thoughtController = {
       { $pull: { reactions: { reactionId: params.reactionId } } },
       { new: true }
     )
-      .then(dbThoughtData => res.json(dbThoughtData))
+      .then(dbThoughtData => {
+        if (!dbThoughtData) {
+          res.status(404).json({ message: 'Nope!'});
+          return;
+        }
+       res.json(dbThoughtData);
+      })
       .catch(err => res.json(err));
   }
+
 
 };
 
